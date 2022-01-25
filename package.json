@@ -1,0 +1,23 @@
+{
+  "name": "async-workshop",
+  "version": "1.0.0",
+  "description": "async workshop",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanhe1/async-workshop.git"
+  },
+  "author": "Evan He",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/evanhe1/async-workshop/issues"
+  },
+  "homepage": "https://github.com/evanhe1/async-workshop#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  }
+}
