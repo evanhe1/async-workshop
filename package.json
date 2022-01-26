@@ -4,7 +4,7 @@
   "description": "async workshop",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node final/index.js"
   },
   "repository": {
     "type": "git",
@@ -15,9 +15,5 @@
   "bugs": {
     "url": "https://github.com/evanhe1/async-workshop/issues"
   },
-  "homepage": "https://github.com/evanhe1/async-workshop#readme",
-  "dependencies": {
-    "express": "^4.17.2",
-    "nodemon": "^2.0.15"
-  }
+  "homepage": "https://github.com/evanhe1/async-workshop#readme"
 }
