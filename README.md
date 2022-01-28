@@ -78,4 +78,11 @@ This function takes only one argument: ```url```, which is simply the url that w
 
 Fortunately for us, the ```get``` function will already return a Promise, so we can directly integrate it into the Promise chain without the use of a wrapper function. Internally, the execution of the ```get``` can be thought of as producing two objects: ```err``` representing any errors that may have occurred (Unlike the ```question``` function, which did not produce error objects, the ```get``` function will produce an error if the request is unsucessful), and ```res```, representing the response to the request. If an error occurred (i. e. the ```err``` object is defined), then the ```reject``` function will be called with ```err``` as its argument. Otherwise, the ```resolve``` function will be called with the ```res``` as its argument. 
 
+With a better understanding of the ```get``` function, we can now consider how to chain it onto the previous ```questionPromise``` function. To accomplish this chaining, we will use the ```then``` function. Below is an example of combining the ```questionPromise``` and ```get``` functions with ```then```:
 
+```Javascript
+questionPromise("Enter a dog breed: ")
+  .then((data) => {
+    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+  })
+ ```
