@@ -26,10 +26,19 @@ Now with a better understanding of the motivations for asynchronous code, let's 
 
 ![Promise state diagram](https://user-images.githubusercontent.com/72584623/151504184-1c8cd3de-433e-4289-a04e-ccab39aeaedb.png)
 
-Promises will allow us to chain together asynchronous operations and only execute a second, dependent asynchronous operation when the result of the original operation is known. To further explore promises, we will be building a simple app that takes in user input of a dog breed through the console, and retrives either a corresponding picture upon success, or reports an error upon failure. The app's overall pipeline is fairly straightforward: read user input, use this input to perform an https request for the image, and store the url of the image in a text file. Each of these operations has already been implemented an asychronous function for us to use, with only a few small modifications. Navigate to the 
-```starter/index.js``` file and let's get started!
+Promises will allow us to chain together asynchronous operations and only execute a second, dependent asynchronous operation when the result of the original operation is known. To further explore promises, we will be building a simple app that takes in user input of a dog breed through the console, and retrives either a corresponding picture upon success, or reports an error upon failure. The app's overall pipeline is fairly straightforward: read user input, use this input to perform an http request for the image, and store the url of the image in a text file. Each of these operations has already been implemented an asychronous function for us to use, with only a few small modifications. Navigate to the ```starter/index.js``` file and let's get started!
 
-According to our pipeline, we will be first reading in user input. For this action, we will be using the ```question``` function from the ```readline``` module. The necessary setup to use this function has already been performend at the top of the starter file. Below is a standard instance of the ```question``` function that will simply print the user's input to the console:
+# Building our Project!
+
+# Initial Setup
+
+This small app will make use of some third-party modules that must be installed into our project directory. To do so, navigate to the project directory in your terminal and simply run
+
+```npm install```. This command will perform all the necessary setup work for us. For more information on how npm works check out the links avilable in the "Additional Resources" section.
+
+# Reading User Data
+
+According to our pipeline, we will be first reading in user input. For this action, we will be using the ```question``` function from the ```readline``` module. Below is a standard instance of the ```question``` function that will simply print the user's input to the console:
 
 ```Javascript
 rl.question(query, (data) => {
@@ -55,6 +64,18 @@ const questionPromise = (query) => {
 
 ```questionPromise``` is just a standard arrow function that returns a Promise. Its single argument, ```query```, will simply be passed down as the ```query``` argument for the inner ```question``` function call. In the return statement, we invoke the Promise constructor and pass a single argument to it: an anonymous arrow function that will be evaluated to determine the Promise's ultimate value. This arrow function in turn takes two arguments: ```resolve``` and ```reject```. These arguments represent predefined functions to be called to set the Promise's final state. Calling the ```resolve``` function represents a fulfilled Promise, while calling the ```reject``` function represents a rejected Promise. Since we are implementing this Promise, when to call each of these functions is completely up to us! 
 
-In this case, we want the final state of the Promise to depend on what the user entered into the ```question``` function. Fortunately, the user's input is available to us through the ```data``` argument of the callback for the ```question``` function. Since we are not handling input validation at this stage in the pipeline, we can simply resolve the Promise, attaching ```data``` as an argument so that this value is available for future use. If any error had occurred, we would  have had to reject the Promise and returned the value of this error using the ```reject``` function. Now recall that the callback did not provide an error argument for us to process. For our purposes, this is unimportant since we can catch potential errors later in the pipeline. Thus we can make our lives eaiser and simply always resolve the Promise. In fact, we could even omit the ```reject``` argument. It had only appeared previously for the sake of completion.
+In this case, we want the final state of the Promise to depend on what the user entered into the ```question``` function. Fortunately, the user's input is available to us through the ```data``` argument of the callback for the ```question``` function. Since we are not handling input validation at this stage in the pipeline, we can simply resolve the Promise, attaching ```data``` as an argument so that this value is available for future use. If any error had occurred, we would have had to reject the Promise and returned the value of this error using the ```reject``` function. Now recall that the callback did not provide an error argument for us to process. For our purposes, this is unimportant since we can catch potential errors later in the pipeline. Thus we can make our lives easier and simply always resolve the Promise. In fact, we could even omit the ```reject``` argument. It had only appeared previously for the sake of completion.
 
-Now that the user's input is available for use, we must go over how to actually use it.
+# Performing an HTTP Request
+
+Now that the user's input is available for use, we can move on to the next step of the pipeline: performing an http request based on the user's input. To do this, we will be using another function that will greatly simplify making the request for us: ```superagent.get```. The function is used as follows:
+
+```Javascript
+superagent.get(url)
+```
+
+This function takes only one argument: ```url```, which is simply the url that we will retrieving data from. Just passing a valid url will be enough will be enough to perform a successful request, the ```get``` function will handle all the details of performing the request under the hood.
+
+Fortunately for us, the ```get``` function will already return a Promise, so we can directly integrate it into the Promise chain without the use of a wrapper function. Internally, the execution of the ```get``` can be thought of as producing two objects: ```err``` representing any errors that may have occurred (Unlike the ```question``` function, which did not produce error objects, the ```get``` function will produce an error if the request is unsucessful), and ```res```, representing the response to the request. If an error occurred (i. e. the ```err``` object is defined), then the ```reject``` function will be called with ```err``` as its argument. Otherwise, the ```resolve``` function will be called with the ```res``` as its argument. 
+
+
