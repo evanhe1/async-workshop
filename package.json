@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/evanhe1/async-workshop/issues"
   },
-  "homepage": "https://github.com/evanhe1/async-workshop#readme"
+  "homepage": "https://github.com/evanhe1/async-workshop#readme",
+  "dependencies": {
+    "superagent": "^7.1.1"
+  }
 }
