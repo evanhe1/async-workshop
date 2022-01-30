@@ -1,6 +1,6 @@
 node_modules
 .DS_Store
 img.txt
-http.js
+*http.js
 *callbacks.js
 
