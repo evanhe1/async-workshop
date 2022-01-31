@@ -36,7 +36,7 @@ Finished cheap task 1
 Finished cheap task 2
 Finished expensive task
 ```
-As it turns out, the ```setTimeout``` function is asynchronous! After "Finished cheap task 1" is printed to the console, execution does not pause to wait for the 10-second timer to expire, but instead continues onto the next statement, resulting in "Finished cheap task 2" being printed next. After the timer expires, only then is "Finished expensive task" printed. 
+As it turns out, the ```setTimeout``` function is asynchronous! After "Finished cheap task 1" is printed to the console, execution does not pause to wait for the 5-second timer to expire, but instead continues onto the next statement, resulting in "Finished cheap task 2" being printed next. After the timer expires, only then is "Finished expensive task" printed. 
 
 ## Promises
 
@@ -46,7 +46,7 @@ Now with a better understanding of the motivations for asynchronous code, let's 
 - fulfilled
 - rejected 
 
-The initial state of the Promise will be pending, and the final state of the Promise will only become known when the operation that defines its value terminates. Based on this final value, the Promise's state will either be fulfilled (if the operation was succeeded) or rejected (if the operation failed). 
+The initial state of the Promise will be pending, and the final state of the Promise will only become known when the operation that defines its value terminates. Based on this final value, the Promise's state will either be fulfilled (if the operation succeeded) or rejected (if the operation failed). 
 
 ![Promise state diagram](https://user-images.githubusercontent.com/72584623/151504184-1c8cd3de-433e-4289-a04e-ccab39aeaedb.png)
 
@@ -58,15 +58,19 @@ Promises will allow us to chain together asynchronous operations and only execut
 
 This small program will make use of some third-party modules that must be installed into our project directory. To do so, navigate to the project directory in your terminal and simply run
 
-```npm install```. This command will perform all the necessary setup work for us. For more information on how npm works check out the links avilable in the [Additional Resources](#additional-resources) section.
+```npm install```
+
+This command will perform all the necessary setup work for us. For more information on how npm works check out the links avilable in the [Additional Resources](#additional-resources) section.
 
 ### Running the Code
 
-At any point, you can run the code you have written so far with the command ```npm start```.
+At any point, you can run the code you have written so far with the command 
+
+```npm start```
 
 ### Reading User Data
 
-According to our pipeline, we will be first reading in user input. For this action, we will be using the ```question``` function from the ```readline``` module. Below is a standard instance of the ```question``` function that will simply print the user's input to the console:
+According to our pipeline, we will first be reading in user input. For this action, we will be using the ```question``` function from the ```readline``` module. Below is a standard instance of the ```question``` function that will simply print the user's input to the console:
 
 ```Javascript
 rl.question(query, (data) => {
@@ -75,9 +79,9 @@ rl.question(query, (data) => {
     });
 ```
 
-The function's first argument: ```query```, represents a prompt string to communicate what the user should input, and is second argument is a ```callback``` function. A **callback** is a function passed to another function that this other function will invoke at a specified point in its execution (in this case, after the user submits their input). It takes in a single argument, ```data```, which will provide us access to the user's input. This callback is unique in that it does not take in an additional argument representing potential errors that occurred during the function's execution. As such, we cannot rely on the value of this hypothetical argument to handle errors. We will return to this point later. The ```rl.close()``` function call inside the callback is simply to prevent the user from entering any more text after they have submitted. 
+The function's first argument, ```query```, represents a prompt string to communicate what the user should input, and is second argument is a ```callback``` function. A **callback** is a function passed to another function that this other function will invoke at a specified point in its execution (in this case, after the user submits their input). It takes in a single argument, ```data```, which will provide us access to the user's input. This callback is unique in that it does not take in an additional argument representing potential errors that occurred during the function's execution. As such, we cannot rely on the value of this hypothetical argument to handle errors. We will return to this point later. The ```rl.close``` function call inside the callback is simply to prevent the user from entering any more text after they have submitted. 
 
-The only remaining difficulty for us to overcome is this function's return value, which is currently ```null```. However, in order to chain on another asynchronous operation after reading user input, we will need the ```question``` function to return a Promise. To do this, we will wrap the ```question```function, ```questionPromise```. This function will return the Promise that we are looking for. The ```questionPromise``` wrapper function might look something like this:
+The only remaining difficulty for us to overcome is this function's return value, which is currently ```null```. However, in order to chain on another asynchronous operation after reading user input, we will need the ```question``` function to return a Promise. To do this, we will wrap the ```question```function, in another function, ```questionPromise```. This function will return the Promise that we are looking for. The ```questionPromise``` wrapper function will look like this:
 
 ```Javascript
 const questionPromise = (query) => {
@@ -92,7 +96,7 @@ const questionPromise = (query) => {
 
 ```questionPromise``` is just a standard arrow function that returns a Promise. Its single argument, ```query```, will simply be passed down as the ```query``` argument for the inner ```question``` function call. In the return statement, we invoke the Promise constructor and pass a single argument to it: an anonymous arrow function that will be evaluated to determine the Promise's ultimate value. This arrow function in turn takes two arguments: ```resolve``` and ```reject```. These arguments represent predefined functions to be called to set the Promise's final state. Calling the ```resolve``` function represents a fulfilled Promise, while calling the ```reject``` function represents a rejected Promise. Since we are implementing this Promise, when to call each of these functions is completely up to us! 
 
-In this case, we want the final state of the Promise to depend on what the user entered into the ```question``` function. Fortunately, the user's input is available to us through the ```data``` argument of the callback for the ```question``` function. Since the function does not produce an error object, we can simply resolve the Promise, attaching ```data``` as an argument so that this value is available for future use. In fact, we could even omit the ```reject``` argument. It had only appeared previously for the sake of completion. As for errors that do occur due to a rejected Promise, we will later show how to handle them all at the end of the Promise chain in a concise way.
+In this case, we want the final state of the Promise to depend on what the user entered into the ```question``` function. Fortunately, the user's input is available to us through the ```data``` argument of the callback for the ```question``` function. Since the function does not produce an error object, we can simply resolve the Promise, attaching ```data``` as an argument so that this value is available for future use. In fact, we could even omit the ```reject``` argument. It had only appeared previously for the sake of completion, so that we could briefly introduce its purpose. 
 
 ### Performing an HTTP Request
 
@@ -102,9 +106,9 @@ Now that the user's input is available for use, we can move on to the next step 
 superagent.get(url)
 ```
 
-This function takes only one argument: ```url```, which is simply the url that we will retrieving data from. Just passing a valid url will be enough will be enough to perform a successful request, the ```get``` function will handle all the details of performing the request under the hood. For more details on HTTP requests, check out the links in the [Additional Resources](#additional-resources) section.
+This function takes only one argument: ```url```, which is simply the url that we will retrieving data from. Just passing a valid url will be enough to perform a successful request; the ```get``` function will handle all the details of performing the request under the hood. For more details on HTTP requests, check out the links in the [Additional Resources](#additional-resources) section.
 
-Fortunately for us, the ```get``` function will already return a Promise, so we can directly integrate it into the Promise chain without the use of a wrapper function. Internally, the execution of the ```get``` can be thought of as producing two objects: ```err``` representing any errors that may have occurred (Unlike the ```question``` function, which did not produce error objects, the ```get``` function will produce an error if the request is unsucessful), and ```res```, representing the response to the request. If an error occurred (i. e. the ```err``` object is defined), then the ```reject``` function will be called with ```err``` as its argument. Otherwise, the ```resolve``` function will be called with the ```res``` as its argument. 
+Fortunately for us, the ```get``` function will already return a Promise, so we can directly integrate it into the Promise chain without the use of a wrapper function. Internally, the execution of the ```get``` function can be thought of as producing two objects: ```err``` representing any errors that may have occurred (Unlike the ```question``` function, which did not produce error objects, the ```get``` function will produce an error if the request is unsucessful), and ```res```, representing the response to the request. If an error occurred (i. e. the ```err``` object is defined), then the ```reject``` function will be called with ```err``` as its argument. Otherwise, the ```resolve``` function will be called with the ```res``` as its argument. 
 
 With a better understanding of the ```get``` function, we can now consider how to chain it onto the previous ```questionPromise``` function. To accomplish this chaining, we will use the ```then``` function. Below is an example of combining the ```questionPromise``` and ```get``` functions with ```then```:
 
@@ -117,7 +121,7 @@ questionPromise("Enter a dog breed: ")
  
 The ```then``` function is a method of the Promise object. It executes when a Promise updates its state, and can take two optional arguments: ```onFulfilled```, a callback executed when a promise is resolved, and ```onRejected```, a callback executed when a promise is rejected. As mentioned earlier, the ```questionPromise``` function does not return an error object, so the ```onRejected``` argument can be omitted. 
 
-In the ```questionPromise``` function, we passed the value ```data``` (representing the user's input) to the ```resolve``` function when returning a resolved Promise, so this value will be available for the ```onFulfilled``` callback to use. Inside this callback, we are free to call the ```get``` function with the value of ```data```, since the Promise that produces the value of ```data``` will be guaranteed to have resolved state at this point. We will be using dog.ceo as the source of our images. The value of the ```url``` argument of the ```get``` function takes the form of a template string, with the response to the request depending on the value of ```data```, which will determine the breed of the dog in the image that dog.ceo returns. As mentioned earlier, ```get``` already returns a Promise so we are free to chain on the next function.
+In the ```questionPromise``` function, we passed the value ```data``` (representing the user's input) to the ```resolve``` function when returning a resolved Promise, so this value will be available for the ```onFulfilled``` callback to use. Inside this callback, we are free to call the ```get``` function with the value of ```data```, since the Promise that produces the value of ```data``` will be guaranteed to have a resolved state at this point. We will be using dog.ceo as the source of our images. The value of the ```url``` argument of the ```get``` function takes the form of a template string, with the response to the request depending on the value of ```data```, which will determine the breed of the dog in the image that dog.ceo returns. As mentioned earlier, ```get``` already returns a Promise so we are free to chain on the next function.
 
 ### Writing to a File
 
@@ -145,7 +149,7 @@ const writeFilePromise = (file, data) => {
 };
 ```
 
-The format of this function is similar to that of ```questionPromise```, but with the introduction of potentially rejecting a Promise. We can now check if the ```err``` object is set (not ```null```) and reject the Promise if that is the case. The argument passed into the ```reject``` uses the Javascript ```Error``` object constructor to standardize error handling later on.
+The format of this function is similar to that of ```questionPromise```, but with the introduction of potentially rejecting a Promise. We can now check if the ```err``` object is set (not ```null```) and reject the Promise if that is the case. The argument passed into the ```reject``` parameter uses the Javascript ```Error``` object constructor to standardize error handling later on.
 
 With ```writeFile``` rewritten to return a Promise, we can now chain it on to our previous Promises. Just like before, we will use the ```then``` method. Below is our three Promises chained together:
 
@@ -199,13 +203,13 @@ questionPromise("Enter a dog breed: ")
   });
 ```
 
-The ```catch``` function behaves exactly like a ```then``` function, except for the fact that it only takes in the  ```onRejected``` callback. Thus, the ```catch``` function is useful for error handling. The reason that we have avoided using this function thus far is because we can use a single ```catch``` function at the end of the Promise chain to handle all errors that result in rejected Promises, and we do not need to consider errors from each function along the way separately. All Javascript ```Error``` objects have a ```message``` field that contains a human-readable description of the error that occurred, so in the callback we will simply log this description to the console.
+The ```catch``` function behaves exactly like a ```then``` function, except for the fact that it only takes in the  ```onRejected``` callback. Thus, the ```catch``` function is useful for error handling. We have avoided using this function thus far because we can use a single ```catch``` function at the end of the Promise chain to handle all errors that result in rejected Promises, and we do not need to consider errors from each function along the way separately. All Javascript ```Error``` objects have a ```message``` field that contains a human-readable description of the error that occurred, so in the callback we will simply log this description to the console.
 
-With error handling complete, we have fully implemented our program! The program will take in a user input, make an HTTP request, and write to result of this request to a file. Test the program with the command (using ```npm start``` as mentioned earlier) using both valid and invalid dog breed names and make sure you get the expected outputs and errors.
+With error handling complete, we have fully implemented our program! The program will take in a user input, make an HTTP request, and write the result of this request to a file. Test the program (using ```npm start``` as mentioned earlier) using both valid and invalid dog breed names and make sure you get the expected outputs and errors.
 
 ## async/await
 
-Now that we have some familiarity with Promises and how our program could have been implemented using them, let's learn a new syntax that will make Promises make easier to work with. This syntax is called **async/await**. Let's consider the ```async``` keyword first. The ```async``` keyword is used in the header of a function. Here it is in a regular function:
+Now that we have some familiarity with Promises and how our program could have been implemented using them, let's learn a new syntax that will make Promises easier to work with. This syntax is called **async/await**. Let's consider the ```async``` keyword first. The ```async``` keyword is used in the header of a function. Here it is in a regular function:
 
 ```Javascript
 async function f1() {
@@ -220,7 +224,7 @@ const f1 = async () => {
 };
 ```
 
-Using the ```async``` keyword will cause the associated function to return a Promise. Even when the return value is not a Promise, this value will be wrapped in a resolved Promise, much in the same way that manually created wrappers earlier. See the function below:
+Using the ```async``` keyword will cause the associated function to return a Promise. Even when the return value is not a Promise, this value will be wrapped in a resolved Promise, much in the same way that we manually created wrappers earlier. See the function below:
 
 ```Javascript
 const f1 = async () => {
@@ -274,11 +278,11 @@ end
 waited for 2 seconds
 ```
 
-since there function does not know to block execution and wait for the timer.
+since the function does not block execution and wait for the timer.
 
 ### Using async/await with our Example
 
-With our new knowledge of how the ```async``` and ```await``` keyword work together, let's trying rewriting our dog image retrieval program as a single ```async``` function. Since all three functions that we used in our pipeline already return Promises, we can directly used them with the ```await``` keyword, as follows:
+With our new knowledge of how the ```async``` and ```await``` keywords work together, let's trying rewriting our dog image retrieval program as a single ```async``` function. Since all three functions that we used in our pipeline already return Promises, we can directly use them with the ```await``` keyword, as follows:
 
 ```Javascript
 const textToPic = async () => {
@@ -292,7 +296,7 @@ const textToPic = async () => {
 };
 ```
 
-Note that the asynchronous Promises and synchronous ```console.log``` calls are written as everything was synchronous, with the ```await``` keyword serving as the only distinguishing characteristic. This is the main benefit of using the async/await syntax: it allows us to integrate asynchronous and synchronous code much more seamlessly.
+Note that the asynchronous Promises and synchronous ```console.log``` calls are written as if everything were synchronous, with the ```await``` keyword serving as the only distinguishing characteristic. This is the main benefit of using the async/await syntax: it allows us to integrate asynchronous and synchronous code much more seamlessly.
 
 ### Handling Errors
 
@@ -314,13 +318,13 @@ const textToPic = async () => {
 };
 ```
 
-The function will attempt to execute to code inside the ```try``` block, which is identical to the body of the previous function above. The only difference is that the ```catch``` block will now handle errors by loggin them to the console. The control flow is ultimately very similar to the Promise chain that we utilized above, but with the added benefit of appearing more like pure synchronous code.
+The function will attempt to execute to code inside the ```try``` block, which is identical to the body of the previous function above. The only difference is that the ```catch``` block will now handle errors by logging them to the console. The control flow is ultimately very similar to the Promise chain that we utilized above, but with the added benefit of appearing more like pure synchronous code.
 
-Note that the ```try/catch``` block is a synchronous construct, and will not work immediately with all asychronous code. It is only because of the blocking introduces by the ```await``` keywords that enables the ```try/catch``` block to work properly inside of an ```async``` function.
+Note that the ```try/catch``` block is a synchronous construct, and will not work immediately with all asychronous code. It is only because of the blocking introduced by the ```await``` keywords that enables the ```try/catch``` block to work properly inside of an ```async``` function.
 
 ## Conclusion
 
-This workshop introduced asynchronous code and the motivations behind it, as well as how to use it in Javascript. As an example, we implemented a dog image retriever in two different ways: using Promises alone and async/await. To learn more about all the topics discussed in this workshop, check out the links below. Thank you all so much!
+This workshop introduced asynchronous code and the motivations behind it, as well as how to use it in Javascript. As an example, we implemented a dog image retriever in two different ways: using Promises alone and ```async/await```. To learn more about all the topics discussed in this workshop, check out the links below. Thank you all so much!
 
 ## Additional Resources
 
